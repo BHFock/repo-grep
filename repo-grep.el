@@ -267,7 +267,9 @@ Optional keyword arguments in ARGS:
          (if (eq repo-grep-backend 'rg)
              (repo-grep--build-rg-command search-pattern include-ext exclude-ext)
            (repo-grep--build-grep-command search-pattern include-ext exclude-ext))
-         'grep-mode)))))
+         'grep-mode
+         (when repo-grep-new-buffer
+           (lambda (_) (generate-new-buffer-name "*grep*"))))))))
 
 (defun repo-grep--build-file-flags (include-ext exclude-ext)
   "Build a list of quoted --include and --exclude flag strings for grep.
