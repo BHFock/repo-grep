@@ -1,7 +1,7 @@
 ;;; repo-grep.el --- Project-wide grep search -*- lexical-binding: t; -*-
 
 ;; Author:  Bjoern Hendrik Fock
-;; Version: 1.7.0
+;; Version: 1.8.0
 ;; License: BSD-3-Clause
 ;; Keywords: tools search grep convenience project
 ;; Package-Requires: ((emacs "27.1"))
@@ -29,6 +29,7 @@
 ;; - Clickable results in a standard *grep* buffer
 ;; - Optional ripgrep (rg) backend for faster searches
 ;; - Optional .gitignore bypass when using the rg backend
+;; - Optional multiple grep buffers to keep previous results intact
 ;;
 ;; For installation, configuration, and usage examples, see the README and
 ;; the tutorial at https://github.com/BHFock/repo-grep.
@@ -157,6 +158,27 @@ ripgrep must be installed and available on PATH when selecting `rg'."
     (message "Search backend is now %s"
              (symbol-name repo-grep-backend))))
 
+(defcustom repo-grep-new-buffer nil
+  "If non-nil, each search opens a fresh buffer instead of reusing *grep*."
+  :type 'boolean
+  :group 'repo-grep)
+
+;;;###autoload
+(defun repo-grep-set-new-buffer ()
+  "Interactively toggle `repo-grep-new-buffer' between ON and OFF.
+When ON, each search opens a fresh *grep* buffer, leaving previous
+results intact."
+  (interactive)
+  (let* ((options '(("ON" . t) ("OFF" . nil)))
+         (current (if repo-grep-new-buffer "ON" "OFF"))
+         (choice (completing-read
+                  (format "New buffer per search is currently %s. Choose new value: " current)
+                  (mapcar #'car options)
+                  nil t)))
+    (setq repo-grep-new-buffer (cdr (assoc choice options)))
+    (message "New buffer per search is now %s"
+             (if repo-grep-new-buffer "ENABLED" "DISABLED"))))
+
 ;;;###autoload
 (defun repo-grep (&rest args)
   "Run a project-wide grep search from the detected repository root.
@@ -210,7 +232,10 @@ Optional keyword arguments in ARGS:
   :exclude-ext   List of file extensions to exclude.
   :include-ext   List of file extensions to include.
   :left-regex    Regex pattern to prepend to the search term.
-  :right-regex   Regex pattern to append to the search term."
+  :right-regex   Regex pattern to append to the search term.
+
+Respects `repo-grep-new-buffer': when non-nil, results are opened in a
+fresh buffer rather than reusing the existing *grep* buffer."
   (let* ((exclude-ext (plist-get args :exclude-ext))
          (include-ext (plist-get args :include-ext))
          (left-regex  (repo-grep--sanitise-regex (plist-get args :left-regex)))
@@ -246,7 +271,9 @@ Optional keyword arguments in ARGS:
          (if (eq repo-grep-backend 'rg)
              (repo-grep--build-rg-command search-pattern include-ext exclude-ext)
            (repo-grep--build-grep-command search-pattern include-ext exclude-ext))
-         'grep-mode)))))
+         'grep-mode
+         (when repo-grep-new-buffer
+           (lambda (_) (generate-new-buffer-name "*grep*"))))))))
 
 (defun repo-grep--build-file-flags (include-ext exclude-ext)
   "Build a list of quoted --include and --exclude flag strings for grep.
