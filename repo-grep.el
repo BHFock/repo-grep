@@ -29,6 +29,7 @@
 ;; - Clickable results in a standard *grep* buffer
 ;; - Optional ripgrep (rg) backend for faster searches
 ;; - Optional .gitignore bypass when using the rg backend
+;; - Optional multiple grep buffers to keep previous results intact
 ;;
 ;; For installation, configuration, and usage examples, see the README and
 ;; the tutorial at https://github.com/BHFock/repo-grep.
