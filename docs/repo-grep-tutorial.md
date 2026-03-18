@@ -358,4 +358,29 @@ M-x repo-grep-set-rg-use-gitignore
 You will be prompted to select between ON and OFF. This setting only applies
 when using the rg backend.
 
+### Multiple grep buffers (default: off)
+
+By default, each search reuses the same `*grep*` buffer, replacing previous
+results. If you want to keep earlier results intact — for example, to compare
+two searches side by side — you can open each search in a fresh buffer instead.
+
+#### Option 1: Set it in your configuration
+```elisp
+(setq repo-grep-new-buffer t)
+```
+
+To restore the default (reuse the existing buffer):
+```elisp
+(setq repo-grep-new-buffer nil)
+```
+
+#### Option 2: Toggle it interactively
+```elisp
+M-x repo-grep-set-new-buffer
+```
+
+You will be prompted to select between ON and OFF. When enabled, each search
+opens a new `*grep*` buffer named `*grep*`, `*grep*<2>`, `*grep*<3>`, and so
+on. Switch between them with `C-x b` as with any other buffer.
+
 [Back to top ↑](#table-of-contents)
