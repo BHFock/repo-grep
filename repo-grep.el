@@ -163,6 +163,22 @@ ripgrep must be installed and available on PATH when selecting `rg'."
   :group 'repo-grep)
 
 ;;;###autoload
+(defun repo-grep-set-new-buffer ()
+  "Interactively toggle `repo-grep-new-buffer' between ON and OFF.
+When ON, each search opens a fresh *grep* buffer, leaving previous
+results intact."
+  (interactive)
+  (let* ((options '(("ON" . t) ("OFF" . nil)))
+         (current (if repo-grep-new-buffer "ON" "OFF"))
+         (choice (completing-read
+                  (format "New buffer per search is currently %s. Choose new value: " current)
+                  (mapcar #'car options)
+                  nil t)))
+    (setq repo-grep-new-buffer (cdr (assoc choice options)))
+    (message "New buffer per search is now %s"
+             (if repo-grep-new-buffer "ENABLED" "DISABLED"))))
+
+;;;###autoload
 (defun repo-grep (&rest args)
   "Run a project-wide grep search from the detected repository root.
 
