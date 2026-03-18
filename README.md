@@ -20,7 +20,7 @@ When working across large projects or multiple repositories, staying inside Emac
 - Multi-repo search from a shared parent folder
 - Regex context and file-type filters
 - Optional ripgrep backend (rg) for fast searches
-- Results in a persistent, clickable *grep* buffer
+- Results in a persistent, clickable *grep* buffer, with optional multiple buffers
 - Sanitised input to avoid unsafe shell execution
 - No project configuration required
 
