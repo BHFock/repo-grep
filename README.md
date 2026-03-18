@@ -62,6 +62,16 @@ You can refine the search term with regular expressions for more precise results
 
 Customise repo-grep to fit your workflow:
 
+### Multiple grep buffers
+
+By default, each search reuses the same `*grep*` buffer. To keep previous
+results intact by opening each search in a fresh buffer instead:
+```
+(setq repo-grep-new-buffer t)
+```
+
+Toggle interactively with `M-x repo-grep-set-new-buffer`.
+
 ### Case sensitivity
   
 Toggle with `M-x repo-grep-set-case-sensitivity` or set directly: 
