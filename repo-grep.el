@@ -157,6 +157,11 @@ ripgrep must be installed and available on PATH when selecting `rg'."
     (message "Search backend is now %s"
              (symbol-name repo-grep-backend))))
 
+(defcustom repo-grep-new-buffer nil
+  "If non-nil, each search opens a fresh buffer instead of reusing *grep*."
+  :type 'boolean
+  :group 'repo-grep)
+
 ;;;###autoload
 (defun repo-grep (&rest args)
   "Run a project-wide grep search from the detected repository root.
