@@ -231,7 +231,10 @@ Optional keyword arguments in ARGS:
   :exclude-ext   List of file extensions to exclude.
   :include-ext   List of file extensions to include.
   :left-regex    Regex pattern to prepend to the search term.
-  :right-regex   Regex pattern to append to the search term."
+  :right-regex   Regex pattern to append to the search term.
+
+Respects `repo-grep-new-buffer': when non-nil, results are opened in a
+fresh buffer rather than reusing the existing *grep* buffer."
   (let* ((exclude-ext (plist-get args :exclude-ext))
          (include-ext (plist-get args :include-ext))
          (left-regex  (repo-grep--sanitise-regex (plist-get args :left-regex)))
