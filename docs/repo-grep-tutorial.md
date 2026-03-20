@@ -383,4 +383,21 @@ You will be prompted to select between ON and OFF. When enabled, each search
 opens a new `*grep*` buffer named `*grep*`, `*grep*<2>`, `*grep*<3>`, and so
 on. Switch between them with `C-x b` as with any other buffer.
 
+### Filter results in an existing grep buffer
+
+Once you have search results in a `*grep*` buffer, you can narrow them further without re-running the search using `repo-grep-filter`.
+```elisp
+M-x repo-grep-filter
+```
+
+You will be prompted for a regexp. A filtered clone of the current buffer is opened, leaving the original intact. Links in the filtered buffer navigate
+directly to source files — just like in the original `*grep*` buffer.
+
+This is useful when an initial search returns many results and you want to focus on a specific subset — for example, filtering for a particular filename or a secondary keyword.
+
+To bind the filter command to `f` in grep buffers, add this to your init.el:
+```elisp
+(repo-grep-setup-keybindings)
+```
+
 [Back to top ↑](#table-of-contents)

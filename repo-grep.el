@@ -1,7 +1,7 @@
 ;;; repo-grep.el --- Project-wide grep search -*- lexical-binding: t; -*-
 
 ;; Author:  Bjoern Hendrik Fock
-;; Version: 1.8.0
+;; Version: 1.9.0
 ;; License: BSD-3-Clause
 ;; Keywords: tools search grep convenience project
 ;; Package-Requires: ((emacs "27.1"))
@@ -30,6 +30,10 @@
 ;; - Optional ripgrep (rg) backend for faster searches
 ;; - Optional .gitignore bypass when using the rg backend
 ;; - Optional multiple grep buffers to keep previous results intact
+;; - Optional in-buffer filtering via `repo-grep-filter'
+;;
+;; To bind `repo-grep-filter' to f in grep buffers, call
+;; `repo-grep-setup-keybindings' in your init.el.
 ;;
 ;; For installation, configuration, and usage examples, see the README and
 ;; the tutorial at https://github.com/BHFock/repo-grep.
@@ -395,6 +399,21 @@ If `repo-grep-subfolder' is set and valid, append it to the root."
   (if (string-match-p "[^A-Za-z0-9._~-]" ext)
       (error "Unsafe character in file extension: %s" ext)
     ext))
+
+(defun repo-grep-filter (regexp)
+  "Clone the current grep buffer and filter it to lines matching REGEXP.
+The original buffer is left intact and links in the filtered
+buffer navigate directly to source files."
+  (interactive "sFilter grep results: ")
+  (let* ((clone (clone-buffer nil t)))
+    (with-current-buffer clone
+      (let ((inhibit-read-only t))
+        (keep-lines regexp (point-min) (point-max))))))
+
+(defun repo-grep-setup-keybindings ()
+  "Set up optional repo-grep keybindings in grep-mode-map."
+  (with-eval-after-load 'grep
+    (define-key grep-mode-map (kbd "f") #'repo-grep-filter)))
 
 (provide 'repo-grep)
 

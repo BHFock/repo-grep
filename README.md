@@ -21,6 +21,7 @@ When working across large projects or multiple repositories, staying inside Emac
 - Regex context and file-type filters
 - Optional ripgrep backend (rg) for fast searches
 - Results in a persistent, clickable *grep* buffer, with optional multiple buffers
+- In-buffer result filtering with `repo-grep-filter`
 - Sanitised input to avoid unsafe shell execution
 - No project configuration required
 
@@ -129,6 +130,15 @@ By default, repo-grep bypasses `.gitignore` when using the rg backend to ensure 
 ```
 
 Toggle interactively with `M-x repo-grep-set-rg-use-gitignore`.
+
+### Filter grep results
+
+To filter the results of an existing grep buffer, use `M-x repo-grep-filter`. This clones the current buffer and applies the filter, leaving the original intact. Links in the filtered buffer navigate directly to source files.
+
+To bind the filter command to `f` in grep buffers, add this to your init.el:
+```elisp
+(repo-grep-setup-keybindings)
+```
 
 ### Context-aware search using regex
 
