@@ -13,18 +13,6 @@ When working across large projects or multiple repositories, staying inside Emac
 
 **repo-grep-multi** searches across all sibling folders under the parent directory of the current project. 
 
-## Why use repo-grep?
-
-- Recursive search from the project root (Git, SVN, or any directory)
-- Instant search using the symbol under the cursor
-- Multi-repo search from a shared parent folder
-- Regex context and file-type filters
-- Optional ripgrep backend (rg) for fast searches
-- Results in a persistent, clickable *grep* buffer, with optional multiple buffers
-- In-buffer result filtering with `repo-grep-filter`
-- Sanitised input to avoid unsafe shell execution
-- No project configuration required
-
 ## Dependencies
 
 - Emacs ≥ 27.1
