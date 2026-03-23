@@ -49,106 +49,31 @@ You can refine the search term with regular expressions for more precise results
 
 ## Advanced Usage & Customisation
 
-Customise repo-grep to fit your workflow:
+| Setting | Variable | Default | Toggle |
+|---|---|---|---|
+| Case sensitivity | `repo-grep-case-sensitive` | off | `M-x repo-grep-set-case-sensitivity` |
+| Ignore binary files | `repo-grep-ignore-binary` | on | `M-x repo-grep-set-ignore-binary` |
+| Search backend | `repo-grep-backend` | `grep` (alternative: `rg`) | `M-x repo-grep-set-backend` |
+| Respect .gitignore (rg only) | `repo-grep-rg-use-gitignore` | off | `M-x repo-grep-set-rg-use-gitignore` |
+| Multiple grep buffers | `repo-grep-new-buffer` | off | `M-x repo-grep-set-new-buffer` |
+| Restrict to subfolder | `repo-grep-subfolder` | nil | `M-x repo-grep-set-subfolder` |
 
-### Multiple grep buffers
-
-By default, each search reuses the same `*grep*` buffer. To keep previous
-results intact by opening each search in a fresh buffer instead:
-```
-(setq repo-grep-new-buffer t)
-```
-
-Toggle interactively with `M-x repo-grep-set-new-buffer`.
-
-### Case sensitivity
-  
-Toggle with `M-x repo-grep-set-case-sensitivity` or set directly: 
-```
-(setq repo-grep-case-sensitive t)
-```
-
-### Restrict to subfolder
-  
-Interactively with `M-x repo-grep-set-subfolder` or set directly: 
-
-```
-(setq repo-grep-subfolder "src")
-```
+All settings can also be set directly in your configuration, e.g. `(setq repo-grep-case-sensitive t)`.
 
 ### File type filters
 
-Filter which files are searched by specifying extensions to include or exclude:
+Use `:include-ext` to restrict search to specific file types, or `:exclude-ext` to ignore them. See the [tutorial](docs/repo-grep-tutorial.md) for examples.
 
-Use `:exclude-ext` to ignore certain file types (e.g., logs, backups).
-Use `:include-ext` to restrict search to specific file types.
+### Regex context
 
-Example usage (see the [tutorial](docs/repo-grep-tutorial.md) for more details):
-
-```
-(repo-grep :exclude-ext '(".log" "~"))
-(repo-grep :include-ext '(".f90" ".F90"))
-```
-
-### Binary file search
-
-Binary files are skipped by default. You can change this via `M-x repo-grep-set-ignore-binary` or set:
-
-```
-(setq repo-grep-ignore-binary nil)
-```
-
-### Search backend
-
-repo-grep uses `grep` by default. If [ripgrep](https://github.com/BurntSushi/ripgrep) is installed,
-you can switch to it for faster searches on large repositories:
-
-```
-(setq repo-grep-backend 'rg)
-```
-
-Toggle interactively with `M-x repo-grep-set-backend`.
-
-### ripgrep and .gitignore
-
-By default, repo-grep bypasses `.gitignore` when using the rg backend to ensure complete search coverage. To restore rg's default behaviour of respecting `.gitignore`:
-
-```
-(setq repo-grep-rg-use-gitignore t)
-```
-
-Toggle interactively with `M-x repo-grep-set-rg-use-gitignore`.
+Use `:left-regex` and `:right-regex` to match a symbol only in specific code contexts, such as assignments or subroutine calls. See the [tutorial](docs/repo-grep-tutorial.md) for examples.
 
 ### Filter grep results
 
-To filter the results of an existing grep buffer, use `M-x repo-grep-filter`. This clones the current buffer and applies the filter, leaving the original intact. Links in the filtered buffer navigate directly to source files.
-
-To bind the filter command to `f` in grep buffers, add this to your init.el:
+`M-x repo-grep-filter` clones the current `*grep*` buffer and filters it to lines matching a regexp, leaving the original intact. To bind it to `f` in grep buffers, add this to your init.el:
 ```elisp
 (repo-grep-setup-keybindings)
 ```
-
-### Context-aware search using regex
-
-Use regex fragments to match symbols in specific code contexts.
-
-#### Example: Subroutine calls
-
-```
-(repo-grep :left-regex "CALL.*(")
-```
-
-Matches lines like CALL my_subroutine(...).
-
-#### Example: Assignments
-
-```
-(repo-grep :right-regex ".*=")
-```
-
-Matches lines where the symbol appears on the left-hand side of an assignment.
-
-You can define custom keybindings to frequently used patterns or filters.
 
 ## Security
 
