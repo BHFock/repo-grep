@@ -40,10 +40,9 @@ git clone https://github.com/BHFock/repo-grep.git ~/repo-grep
 ### 3. Open any file and start searching
 
 - Place the cursor over a symbol (e.g., variable or function name)
-- Press `F12` to search the current repository
-- Press `Ctrl + F12` to search across sibling repositories
+- Press `F12` to search the current repository or `Ctrl + F12` to search across sibling repositories
 - Edit the suggested term or press `Enter` to accept
-- Browse results in the clickable `*grep*` buffer
+- Browse results in the clickable `*grep*` buffer — use `n` and `p` to move between matches, `RET` to jump to the source, and `q` to quit
 
 For a detailed guide to all features, see the [repo-grep tutorial](docs/repo-grep-tutorial.md).
 
