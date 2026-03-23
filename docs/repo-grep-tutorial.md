@@ -37,3 +37,48 @@ cursor and pre-fills it as the search term in the minibuffer.
 Press `Enter` to accept it, or edit the term before confirming.
 Results appear immediately in the `*grep*` buffer — use `n` and `p` to
 move between matches, `RET` to jump to the source, and `q` to quit.
+
+
+
+## 3. Narrowing your search
+
+### Restrict to a subfolder
+
+Large scientific projects often have a clear directory structure —
+source code, tests, data, and documentation in separate trees. If you
+only want to search within `src/` and ignore everything else:
+```elisp
+(setq repo-grep-subfolder "src")
+```
+
+Set it interactively with `M-x repo-grep-set-subfolder`, which prompts
+you to pick a folder from your project root. To clear the restriction,
+set it back to `nil`.
+
+If you're browsing in Dired, `M-x repo-grep-set-subfolder-from-dired`
+sets the subfolder to whichever directory is under the cursor.
+
+### Case sensitivity
+
+By default searches are case-insensitive. In Python codebases this
+matters: class names follow `CamelCase` while variables and functions
+use `snake_case`, so searching for `DataProcessor` case-sensitively
+avoids false matches from `data_processor` or `dataprocessor`.
+
+Toggle with `M-x repo-grep-set-case-sensitivity`, or set permanently:
+```elisp
+(setq repo-grep-case-sensitive t)
+```
+
+### Search backend
+
+For large repositories, switching to ripgrep gives noticeably faster
+results with identical output:
+```elisp
+(setq repo-grep-backend 'rg)
+```
+
+Toggle with `M-x repo-grep-set-backend`. ripgrep must be installed and
+available on your PATH.
+
+
