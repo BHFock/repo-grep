@@ -45,7 +45,7 @@ git clone https://github.com/BHFock/repo-grep.git ~/repo-grep
 - Edit the suggested term or press `Enter` to accept
 - Browse results in the clickable `*grep*` buffer
 
-You can refine the search term with regular expressions for more precise results. For a more detailed guide on repo-grep’s features, see the [repo-grep tutorial](docs/repo-grep-tutorial.md).
+For a detailed guide to all features, see the [repo-grep tutorial](docs/repo-grep-tutorial.md).
 
 ## Advanced Usage & Customisation
 
