@@ -155,4 +155,42 @@ To search only Fortran source files and ignore everything else:
 Use `:exclude-ext` to ignore specific types instead — for example
 `'(".log" "~")` to skip logs and Emacs backup files.
 
+## 6. Reference
+
+### All settings
+
+| Setting | Variable | Default | Toggle |
+|---|---|---|---|
+| Case sensitivity | `repo-grep-case-sensitive` | off | `M-x repo-grep-set-case-sensitivity` |
+| Ignore binary files | `repo-grep-ignore-binary` | on | `M-x repo-grep-set-ignore-binary` |
+| Search backend | `repo-grep-backend` | `grep` (alternative: `rg`) | `M-x repo-grep-set-backend` |
+| Respect .gitignore (rg only) | `repo-grep-rg-use-gitignore` | off | `M-x repo-grep-set-rg-use-gitignore` |
+| Multiple grep buffers | `repo-grep-new-buffer` | off | `M-x repo-grep-set-new-buffer` |
+| Restrict to subfolder | `repo-grep-subfolder` | nil | `M-x repo-grep-set-subfolder` |
+
+All settings can also be set directly in your configuration, e.g. `(setq repo-grep-case-sensitive t)`.
+
+### Binary file search
+
+By default repo-grep skips binary files. To include them:
+```elisp
+(setq repo-grep-ignore-binary nil)
+```
+
+### ripgrep and .gitignore
+
+When using the `rg` backend, repo-grep bypasses `.gitignore` by default
+to match the behaviour of the `grep` backend. To restore rg's default
+behaviour of respecting `.gitignore`:
+```elisp
+(setq repo-grep-rg-use-gitignore t)
+```
+
+### Subfolder from Dired
+
+If you are browsing in Dired, `M-x repo-grep-set-subfolder-from-dired`
+sets the subfolder to whichever directory is under the cursor — a
+convenient alternative to `M-x repo-grep-set-subfolder`.
+
+[Back to top ↑](#table-of-contents)
 
