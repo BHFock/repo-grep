@@ -1,403 +1,196 @@
 # repo-grep Tutorial
 
 ## Table of Contents
-1. [Introduction to repo-grep](#1-introduction-to-repo-grep)
-2. [Installation & setup](#2-installation--setup)
-3. [Basic usage](#3-basic-usage)
-4. [Scope Control](#4-scope-control)
-5. [File Filtering](#5-file-filtering)
-6. [Search Behaviour](#6-search-behaviour)
+1. [Getting started](#1-getting-started)
+2. [Your first search](#2-your-first-search)
+3. [Narrowing your search](#3-narrowing-your-search)
+4. [Working with results](#4-working-with-results)
+5. [Matching patterns in context](#5-matching-patterns-in-context)
+6. [Reference](#6-reference)
 
-## 1. Introduction to repo-grep
+## 1. Getting started
 
-Navigating large codebases in Emacs can be fast and seamless with `repo-grep`. It brings project-wide search directly into Emacs — eliminating the need to switch to a terminal or external tools.
+This tutorial walks you through repo-grep from a first search to more
+advanced workflows. For installation instructions, see the
+[README](../README.md).
 
-### Key features:
+Once installed, you have two commands available:
 
-- **One-keystroke search:** Instantly grep for the symbol under your cursor — with minimal prompts and no setup required.
-- **Smart project root detection:** Automatically locates your Git or SVN root; falls back to the current directory if needed.
-- **Multi-repo search:** Scan all sibling repos with `repo-grep-multi`.
-- **Searches all files:** Non-binary files are searched by default, even if untracked by version control.
-- **Optional binary file search:** Skip binary files by default, or include them when needed.
-- **Regex support:** Add prefix/suffix patterns to fine-tune matches.
-- **Custom file exclusions and case sensitivity:** Tailor results to your workflow.
-- **ripgrep backend:** Optional rg backend for significantly faster searches on large repositories.
+- `repo-grep` — searches recursively from the root of the current
+  repository or directory
+- `repo-grep-multi` — broadens the search to all sibling folders under
+  the parent directory, useful when working across multiple related
+  repositories
 
-`repo-grep` keeps you focused inside Emacs — no context-switching, no distractions.
-
-For a quick overview, installation instructions, and access to the source code, visit the `repo-grep` GitHub [repository](https://github.com/BHFock/repo-grep).
-
-[Back to top ↑](#table-of-contents)
-
-## 2. Installation & setup
-
-### Prerequisites
-
-Before installing `repo-grep`, make sure the following is available:
-
-- **Emacs**: Version 27.1 or newer is required.
-- **Grep**: `repo-grep` executes shell-based grep commands to perform searches.
-- **rg** (optional): If [ripgrep](https://github.com/BurntSushi/ripgrep) is installed, 
-  you can use it as an alternative search backend for faster searches on large repositories.
-
-No additional tools or packages are required. This makes setup simple. `repo-grep` uses VCS roots to detect project directories and works independently of Emacs's built-in `project.el` package.
-
-### Installing repo-grep
-
-#### Clone the repository
-
-Run the following command in your terminal:
-
-```
-git clone https://github.com/BHFock/repo-grep.git ~/repo-grep
-```
-
-You may use a different folder, but be sure to update your Emacs configuration accordingly.
-
-#### Load repo-grep in Emacs
-
-Edit your Emacs configuration file (`~/.emacs` or `~/.emacs.d/init.el`) and add:
-
+Bind them to convenient keys in your init.el:
 ```elisp
-;; Add repo-grep to your Emacs load path
-(add-to-list 'load-path "~/repo-grep")
-
-;; Autoload repo-grep functions for efficient project-wide search
-(autoload 'repo-grep "repo-grep")
-(autoload 'repo-grep-multi "repo-grep")
-```
-
-Make sure `~/repo-grep` matches the actual path where you cloned the repository.
-
-#### Define keybindings
-
-To enable instant searching, bind the functions to convenient keys:
-
-```elisp
-(global-set-key [f12] 'repo-grep)         ;; Single-repository search
-(global-set-key [C-f12] 'repo-grep-multi) ;; Multi-repository search
-```
-
-Once you've saved these changes, reload your Emacs configuration or restart Emacs to apply them. You're now ready to start searching with `repo-grep` using just a keystroke. Next, we’ll look at basic usage patterns and how to refine your searches.
-
-[Back to top ↑](#table-of-contents)
-
-## 3. Basic usage
-
-### Starting a search from the cursor position
-
-To start a search, place your cursor over a symbol — such as a variable, function name, or keyword — and press `F12` (or run `M-x repo-grep`). `repo-grep` will automatically detect the symbol under the cursor and use it as the default search term. This uses Emacs’ built-in `thing-at-point`, which works best when your cursor is on a meaningful name in the code, like a variable or subroutine.
-
-### Interactive query
-
-You'll be prompted in the minibuffer with the detected symbol pre-filled. Press `Enter` to search as-is, or edit the term before confirming. This prompt supports regular expressions, so you can write more flexible patterns — for example `variable.*=` to match lines where a variable is assigned.
-
-### Executing the search
-
-Once confirmed, `repo-grep` locates the appropriate folder to search from:
-
-* If you're in a Git repository or SVN working copy, it uses Emacs' built-in VCS root detection.
-* If no VCS root is found, it defaults to the current directory.
-* If repo-grep-subfolder is set, the search is restricted to that subfolder under the root.
-* If repo-grep-from-folder-above is non-nil (as in `repo-grep-multi`), the search starts from the parent directory of the detected root.
-
-Regardless of how the root is detected, `repo-grep` searches all files within that root — not just those tracked by version control. This makes it ideal for scanning generated files, uncommitted changes, and legacy code alongside source files.
-
-### Reviewing results
-
-Search results appear in a dedicated `*grep*` buffer. Each result is a clickable link — click (or press `RET`) to jump directly to the matching line in its file. You can also navigate between matches using `n` (next) and `p` (previous) within the grep buffer, making it easy to browse through results without using the mouse or switching windows. `q` will quit the `*grep*` buffer if you want to return to your file quickly.
-
-With just one keystroke, `repo-grep` turns symbol lookup into a fast, interactive process — no need to leave Emacs or set up project metadata.
-
-[Back to top ↑](#table-of-contents)
-
-## 4. Scope Control
-
-### Multi-repository search
-
-If your projects are structured as multiple repositories or directories under a common parent folder, `repo-grep-multi` can search across all of them in one go. For example, if you have several sibling folders like `~/projects/repo1`, `~/projects/repo2`, and `~/projects/repo3`, `repo-grep-multi` will search across all subdirectories under `~/projects`.
-
-Internally, it works by moving up one level from the detected Git or SVN root — effectively broadening the search scope. This makes multi-repo or multi-project searches automatic, flexible, and context-aware, without requiring any manual path configuration.
-
-#### Example: Bind to `Ctrl + F12`
-
-```elisp
+(global-set-key [f12]   'repo-grep)
 (global-set-key [C-f12] 'repo-grep-multi)
 ```
 
-Now pressing `Ctrl + F12` will search through all folders under the parent directory — no need to manually navigate or run multiple searches.
+## 2. Your first search
+
+Open any source file and place your cursor on a symbol — a variable name,
+function, or keyword. Press `F12`. repo-grep detects the symbol under the
+cursor and pre-fills it as the search term in the minibuffer.
+
+Press `Enter` to accept it, or edit the term before confirming.
+Results appear immediately in the `*grep*` buffer — use `n` and `p` to
+move between matches, `RET` to jump to the source, and `q` to quit.
 
 
-### Restrict search to a specific subfolder
 
-Sometimes you don’t want to search your entire project — just a focused part of it. That’s where `repo-grep-subfolder` comes in.
+## 3. Narrowing your search
 
-You can use this setting to limit your search to a specific subdirectory under the project root. This is especially useful when your project has a typical structure like:
+### Restrict to a subfolder
 
-```
-project-root/
-├── src/
-├── test/
-└── build/
-```
-
-Let’s say you only want to search inside `src/` and ignore everything in `test/` and `build/`. You can do that by setting:
-
+Large scientific projects often have a clear directory structure —
+source code, tests, data, and documentation in separate trees. If you
+only want to search within `src/` and ignore everything else:
 ```elisp
 (setq repo-grep-subfolder "src")
 ```
 
-Now, all searches will be scoped to `project-root/src/` — and nothing outside it. It also works for nested subdirectories. For example, if you want to search only within `src/physics/` and ignore `src/io/`, just set:
+Set it interactively with `M-x repo-grep-set-subfolder`, which prompts
+you to pick a folder from your project root. To clear the restriction,
+set it back to `nil`.
 
-```elisp
-(setq repo-grep-subfolder "src/physics")
-```
+If you're browsing in Dired, `M-x repo-grep-set-subfolder-from-dired`
+sets the subfolder to whichever directory is under the cursor.
 
-You can set this manually in your config, or interactively using:
+### Case sensitivity
 
-```elisp
-M-x repo-grep-set-subfolder
-```
+By default searches are case-insensitive. In Python codebases this
+matters: class names follow `CamelCase` while variables and functions
+use `snake_case`, so searching for `DataProcessor` case-sensitively
+avoids false matches from `data_processor` or `dataprocessor`.
 
-This will prompt you to select a subfolder from your project root.
-
-Alternatively, if you're already browsing in Dired, you can set the subfolder directly from there:
-
-```elisp
-M-x repo-grep-set-subfolder-from-dired
-```
-
-This makes it easy to narrow your search to exactly the part of the codebase you care about — without touching the rest.
-
-Note: `repo-grep-subfolder` is ignored when using `repo-grep-multi`, since multi-repo search always starts from the parent directory of the detected root.
-
-[Back to top ↑](#table-of-contents)
-
-## 5. File Filtering
-
-### Exclude unwanted file types
-
-To keep your results clean, you can tell `repo-grep` to ignore specific file extensions — such as logs, compiled outputs, or Emacs backups.
-
-#### Example: Exclude `.log` and `~` files
-
-```elisp
-(global-set-key [f9]
-  (lambda () (interactive)
-    (repo-grep :exclude-ext '(".log" "~"))))
-```
-
-This ensures that temporary or irrelevant files don’t clutter your search output.
-
-### Include only specific file types
-
-To narrow your search to certain file types — like just Fortran source files — use the `:include-ext` keyword.
-
-#### Example: Search only `.f90` and `.F90` files
-
-```elisp
-(global-set-key [f8]
-  (lambda () (interactive)
-    (repo-grep :include-ext '(".f90" ".F90"))))
-```
-
-This restricts results to Fortran files, ignoring others like `.txt`, `.md`, or `.log`.
-
-If both `:include-ext` and `:exclude-ext` are set, `:include-ext` takes precedence.
-
-[Back to top ↑](#table-of-contents)
-
-## 6. Search Behaviour
-
-### Case sensitivity (default: insensitive)
-
-By default, `repo-grep` performs case-insensitive searches, which is often useful for general-purpose code scanning. If you want to enforce case-sensitive matching, you have two options:
-
-#### Option 1: Set it in your configuration
-
+Toggle with `M-x repo-grep-set-case-sensitivity`, or set permanently:
 ```elisp
 (setq repo-grep-case-sensitive t)
 ```
 
-To restore the default (case-insensitive):
+### Search backend
 
+For large repositories, switching to ripgrep gives noticeably faster
+results with identical output:
 ```elisp
-(setq repo-grep-case-sensitive nil)
+(setq repo-grep-backend 'rg)
 ```
 
-#### Option 2: Toggle it interactively
+Toggle with `M-x repo-grep-set-backend`. ripgrep must be installed and
+available on your PATH.
 
-You can also toggle case sensitivity at any time using the built-in interactive command:
+## 4. Working with results
 
+### Filtering results
+
+When a search returns many matches, `M-x repo-grep-filter` lets you
+narrow them without re-running the search. You are prompted for a
+regexp — repo-grep clones the current buffer and keeps only matching
+lines, leaving the original intact. Links in the filtered buffer
+navigate directly to source files just as in the original.
+
+This is useful when you want to focus on a specific file or secondary
+keyword within a large result set — for example, searching for all uses
+of `temperature` across a project, then filtering for matches in
+`forcing.nml` only.
+
+To bind the filter command to `f` in grep buffers, add this to your
+init.el:
 ```elisp
-M-x repo-grep-set-case-sensitivity
+(repo-grep-setup-keybindings)
 ```
 
-You will be prompted to select between ON and OFF. The setting is updated immediately — no need to edit your configuration or restart Emacs.
+### Multiple search buffers
 
-### Binary file search (default: off)
-
-By default, `repo-grep` is configured to skip binary files, preventing matches inside compiled objects, images, and other non-text content. This keeps your search results clean and focused on source code.
-
-If you want to include binary files in your search — for example, when debugging binary logs or examining non-ASCII data — you can control this behaviour using the `repo-grep-ignore-binary` setting.
-
-#### Option 1: Set it in your configuration
-
-To include binary files in searches:
-
+When tracing something complex across a codebase — say, understanding
+how a numerical solver is initialised, called, and its results consumed
+— it helps to have several searches open side by side. Toggle this on
+the fly with `M-x repo-grep-set-new-buffer`, or set it permanently:
 ```elisp
-(setq repo-grep-ignore-binary nil)
+(setq repo-grep-new-buffer t)
 ```
 
-To skip binary files (default behaviour):
+Each search opens a new `*grep*` buffer named `*grep*`, `*grep*<2>`,
+`*grep*<3>`, and so on. Switch between them with `C-x b`.
 
+## 5. Matching patterns in context
+
+The `:left-regex` and `:right-regex` keyword arguments let you match a
+symbol only when it appears in a specific code context, by prepending or
+appending a regex fragment to the search term. These options require a
+keybinding to use fluidly — a natural next step once you find yourself
+reaching for them regularly.
+
+### Tracing subroutine calls and variable assignments
+
+Two patterns that are particularly useful in large Fortran codebases:
 ```elisp
-(setq repo-grep-ignore-binary t)
-```
+(global-set-key [f10]
+  (lambda () (interactive)
+    (repo-grep :left-regex "CALL.*")))
 
-When enabled, this setting adds `--binary-files=without-match` to the grep command, which tells grep to ignore binary content entirely.
-
-#### Option 2: Toggle it interactively
-
-You can also change this setting on the fly without editing your config:
-
-```elisp
-M-x repo-grep-set-ignore-binary
-```
-
-You'll be prompted to choose whether to skip binary files (ON, default) or include them (OFF). Your choice takes effect immediately and applies to the next search you perform.
-
-### Customise match context with regex prefixes and suffixes
-
-You can customise searches to match specific code patterns using `:left-regex` or `:right-regex`. These options allow you to match a symbol only when it appears in a specific context — such as the left-hand side of an assignment or in a subroutine call. You can do this by prepending or appending regular expression fragments to your search term.
-
-#### Example 1: Match variable assignments (symbol on the left-hand side)
-
-To find where a variable is being assigned a value — and not just used in a calculation — you can append an equals sign using `:right-regex`.
-
-```elisp
 (global-set-key [f11]
   (lambda () (interactive)
     (repo-grep :right-regex ".*=")))
 ```
 
-This searches for cases where the symbol appears to the left of an equals sign. For example, if your cursor is on `gravity_at_sea_level`, this pattern would match:
+Place your cursor on a subroutine name and press `F10` to find every
+call site — building a lightweight interactive call tree without any
+static analysis tools. Press `F11` on a global variable to find every
+line where it is assigned, distinguishing writes from reads. Together
+they make it straightforward to trace both control flow and data flow
+across a large codebase.
 
-```
-gravity_at_sea_level = 9.81
-```
+### Restricting to specific file types
 
-But it would not match if the variable is only used on the right-hand side:
-
-```
-weight = mass * gravity_at_sea_level
-```
-
-#### Example 2: Build an interactive call tree (subroutine calls)
-
-If you're exploring a large Fortran or procedural codebase, you might want to trace which routines call a given subroutine — essentially building a lightweight, interactive call tree.
-
-You can do this using a prefix regex that matches subroutine call sites, e.g., lines starting with `CALL`. This allows you to quickly jump to all points where a subroutine is invoked.
-
+To search only Fortran source files and ignore everything else:
 ```elisp
-(global-set-key [f10]
+(global-set-key [f9]
   (lambda () (interactive)
-    (repo-grep :left-regex "CALL.*")))
+    (repo-grep :include-ext '(".f90" ".F90"))))
 ```
 
-With this setup, place your cursor over the name of a subroutine, press F10, and Emacs will list every line where it is called. Since results are clickable in the `*grep*` buffer, you can walk through each call site interactively — making it easy to understand control flow and dependencies, without any plugins or static analysis tools.
+Use `:exclude-ext` to ignore specific types instead — for example
+`'(".log" "~")` to skip logs and Emacs backup files.
 
-### Search backend (default: grep)
+## 6. Reference
 
-By default, `repo-grep` uses `grep`. If [ripgrep](https://github.com/BurntSushi/ripgrep)
-is installed, you can switch to it as the search backend.
+### All settings
 
-#### Option 1: Set it in your configuration
+| Setting | Variable | Default | Toggle |
+|---|---|---|---|
+| Case sensitivity | `repo-grep-case-sensitive` | off | `M-x repo-grep-set-case-sensitivity` |
+| Ignore binary files | `repo-grep-ignore-binary` | on | `M-x repo-grep-set-ignore-binary` |
+| Search backend | `repo-grep-backend` | `grep` (alternative: `rg`) | `M-x repo-grep-set-backend` |
+| Respect .gitignore (rg only) | `repo-grep-rg-use-gitignore` | off | `M-x repo-grep-set-rg-use-gitignore` |
+| Multiple grep buffers | `repo-grep-new-buffer` | off | `M-x repo-grep-set-new-buffer` |
+| Restrict to subfolder | `repo-grep-subfolder` | nil | `M-x repo-grep-set-subfolder` |
 
+All settings can also be set directly in your configuration, e.g. `(setq repo-grep-case-sensitive t)`.
+
+### Binary file search
+
+By default repo-grep skips binary files. To include them:
 ```elisp
-(setq repo-grep-backend 'rg)
+(setq repo-grep-ignore-binary nil)
 ```
 
-To restore the default:
+### ripgrep and .gitignore
 
-```elisp
-(setq repo-grep-backend 'grep)
-```
-
-#### Option 2: Toggle it interactively
-
-```elisp
-M-x repo-grep-set-backend
-```
-
-You will be prompted to select between `grep` and `rg`. The setting takes effect immediately.
-Both backends produce clickable results in the same `*grep*` buffer — the UX is identical.
-
-### ripgrep and .gitignore (default: bypass)
-
-When using the rg backend, repo-grep bypasses `.gitignore` by default to ensure
-complete search coverage — matching the behaviour of the grep backend.
-
-If you want rg to respect `.gitignore` and similar ignore files:
-
-#### Option 1: Set it in your configuration
+When using the `rg` backend, repo-grep bypasses `.gitignore` by default
+to match the behaviour of the `grep` backend. To restore rg's default
+behaviour of respecting `.gitignore`:
 ```elisp
 (setq repo-grep-rg-use-gitignore t)
 ```
 
-To restore the default (bypass .gitignore):
-```elisp
-(setq repo-grep-rg-use-gitignore nil)
-```
+### Subfolder from Dired
 
-#### Option 2: Toggle it interactively
-```elisp
-M-x repo-grep-set-rg-use-gitignore
-```
-
-You will be prompted to select between ON and OFF. This setting only applies
-when using the rg backend.
-
-### Multiple grep buffers (default: off)
-
-By default, each search reuses the same `*grep*` buffer, replacing previous
-results. If you want to keep earlier results intact — for example, to compare
-two searches side by side — you can open each search in a fresh buffer instead.
-
-#### Option 1: Set it in your configuration
-```elisp
-(setq repo-grep-new-buffer t)
-```
-
-To restore the default (reuse the existing buffer):
-```elisp
-(setq repo-grep-new-buffer nil)
-```
-
-#### Option 2: Toggle it interactively
-```elisp
-M-x repo-grep-set-new-buffer
-```
-
-You will be prompted to select between ON and OFF. When enabled, each search
-opens a new `*grep*` buffer named `*grep*`, `*grep*<2>`, `*grep*<3>`, and so
-on. Switch between them with `C-x b` as with any other buffer.
-
-### Filter results in an existing grep buffer
-
-Once you have search results in a `*grep*` buffer, you can narrow them further without re-running the search using `repo-grep-filter`.
-```elisp
-M-x repo-grep-filter
-```
-
-You will be prompted for a regexp. A filtered clone of the current buffer is opened, leaving the original intact. Links in the filtered buffer navigate
-directly to source files — just like in the original `*grep*` buffer.
-
-This is useful when an initial search returns many results and you want to focus on a specific subset — for example, filtering for a particular filename or a secondary keyword.
-
-To bind the filter command to `f` in grep buffers, add this to your init.el:
-```elisp
-(repo-grep-setup-keybindings)
-```
+If you are browsing in Dired, `M-x repo-grep-set-subfolder-from-dired`
+sets the subfolder to whichever directory is under the cursor — a
+convenient alternative to `M-x repo-grep-set-subfolder`.
 
 [Back to top ↑](#table-of-contents)
+
