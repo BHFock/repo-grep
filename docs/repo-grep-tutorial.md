@@ -82,3 +82,37 @@ Toggle with `M-x repo-grep-set-backend`. ripgrep must be installed and
 available on your PATH.
 
 
+## 4. Working with results
+
+### Filtering results
+
+When a search returns many matches, `M-x repo-grep-filter` lets you
+narrow them without re-running the search. You are prompted for a
+regexp — repo-grep clones the current buffer and keeps only matching
+lines, leaving the original intact. Links in the filtered buffer
+navigate directly to source files just as in the original.
+
+This is useful when you want to focus on a specific file or secondary
+keyword within a large result set — for example, searching for all uses
+of `temperature` across a project, then filtering for matches in
+`forcing.nml` only.
+
+To bind the filter command to `f` in grep buffers, add this to your
+init.el:
+```elisp
+(repo-grep-setup-keybindings)
+```
+
+### Multiple search buffers
+
+When tracing something complex across a codebase — say, understanding
+how a numerical solver is initialised, called, and its results consumed
+— it helps to have several searches open side by side. Toggle this on
+the fly with `M-x repo-grep-set-new-buffer`, or set it permanently:
+```elisp
+(setq repo-grep-new-buffer t)
+```
+
+Each search opens a new `*grep*` buffer named `*grep*`, `*grep*<2>`,
+`*grep*<3>`, and so on. Switch between them with `C-x b`.
+
