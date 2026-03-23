@@ -81,7 +81,6 @@ results with identical output:
 Toggle with `M-x repo-grep-set-backend`. ripgrep must be installed and
 available on your PATH.
 
-
 ## 4. Working with results
 
 ### Filtering results
@@ -115,4 +114,45 @@ the fly with `M-x repo-grep-set-new-buffer`, or set it permanently:
 
 Each search opens a new `*grep*` buffer named `*grep*`, `*grep*<2>`,
 `*grep*<3>`, and so on. Switch between them with `C-x b`.
+
+## 5. Matching patterns in context
+
+The `:left-regex` and `:right-regex` keyword arguments let you match a
+symbol only when it appears in a specific code context, by prepending or
+appending a regex fragment to the search term. These options require a
+keybinding to use fluidly — a natural next step once you find yourself
+reaching for them regularly.
+
+### Tracing subroutine calls and variable assignments
+
+Two patterns that are particularly useful in large Fortran codebases:
+```elisp
+(global-set-key [f10]
+  (lambda () (interactive)
+    (repo-grep :left-regex "CALL.*")))
+
+(global-set-key [f11]
+  (lambda () (interactive)
+    (repo-grep :right-regex ".*=")))
+```
+
+Place your cursor on a subroutine name and press `F10` to find every
+call site — building a lightweight interactive call tree without any
+static analysis tools. Press `F11` on a global variable to find every
+line where it is assigned, distinguishing writes from reads. Together
+they make it straightforward to trace both control flow and data flow
+across a large codebase.
+
+### Restricting to specific file types
+
+To search only Fortran source files and ignore everything else:
+```elisp
+(global-set-key [f9]
+  (lambda () (interactive)
+    (repo-grep :include-ext '(".f90" ".F90"))))
+```
+
+Use `:exclude-ext` to ignore specific types instead — for example
+`'(".log" "~")` to skip logs and Emacs backup files.
+
 
