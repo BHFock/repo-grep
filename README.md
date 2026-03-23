@@ -77,11 +77,11 @@ Use `:left-regex` and `:right-regex` to match a symbol only in specific code con
 
 ## Security
 
-Both grep and rg commands are constructed with input sanitisation to reduce shell‑injection risk.
+repo-grep performs local, read-only searches using standard grep or rg and core Emacs functionality. It does not initiate network connections, execute remote code, or require elevated permissions. Inputs to shell commands are sanitised to reduce shell-injection risk.
 
-repo-grep performs local, read-only searches using standard grep and core Emacs functionality. It does not initiate network connections, execute remote code, or require elevated permissions. Inputs to shell commands are sanitised to reduce shell-injection risk.
+The package is available via [MELPA](https://melpa.org/#/repo-grep), which performs an initial manual review but builds updates automatically from the main branch. Users concerned about supply-chain integrity are encouraged to install from a tagged release or known commit.
 
-The package is available via [MELPA](https://melpa.org/#/repo-grep), which performs an initial manual review but builds updates automatically from the main branch. Users concerned about supply-chain integrity are encouraged to review the source and consider installing from a tagged release or known commit.
+For the full security policy, trust model, and instructions for reporting issues, see [SECURITY.md](./SECURITY.md).
 
 ## License
 
