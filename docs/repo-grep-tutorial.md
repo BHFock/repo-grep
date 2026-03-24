@@ -51,9 +51,7 @@ only want to search within `src/` and ignore everything else:
 (setq repo-grep-subfolder "src")
 ```
 
-Set it interactively with `M-x repo-grep-set-subfolder`, which prompts
-you to pick a folder from your project root. To clear the restriction,
-set it back to `nil`.
+Set it interactively with `M-x repo-grep-set-subfolder`, which prompts you to pick a folder from your project root. To clear the restriction, use `M-x repo-grep-clear-subfolder`, or set it back to `nil` directly.
 
 If you're browsing in Dired, `M-x repo-grep-set-subfolder-from-dired`
 sets the subfolder to whichever directory is under the cursor.
@@ -73,11 +71,7 @@ A typical climate modelling workspace might look like this:
 
 Opening any file inside `cesm/` and pressing `C-F12` searches all three directories in one pass. This is particularly convenient when a shared name — say, `ocean_heat_content` — appears in model output routines, post-processing scripts, and verification code, and you want to trace every reference across the full stack in a single search.
 
-One thing to be aware of: `repo-grep-subfolder` is ignored when using `repo-grep-multi`. The search always spans the entire parent directory. If you have a subfolder restriction active, clear it first before switching to a multi-repo search:
-
-```elisp
-(setq repo-grep-subfolder nil)
-```
+Note that any active `repo-grep-subfolder` restriction is ignored by `repo-grep-multi` — the search always spans all sibling directories regardless.
 
 ### Case sensitivity
 
