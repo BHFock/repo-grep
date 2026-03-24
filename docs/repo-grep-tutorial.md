@@ -58,6 +58,27 @@ set it back to `nil`.
 If you're browsing in Dired, `M-x repo-grep-set-subfolder-from-dired`
 sets the subfolder to whichever directory is under the cursor.
 
+### Searching across multiple repositories
+
+`repo-grep-multi` searches all sibling directories under the parent of your current project root — useful when related code is spread across several repositories checked out side by side.
+
+A typical climate modelling workspace might look like this:
+
+```
+~/climate/
+├── cesm/             ← model source (current repo)
+├── postproc/         ← diagnostic and output processing
+└── verification/     ← observational comparisons and validation scripts
+```
+
+Opening any file inside `cesm/` and pressing `C-F12` searches all three directories in one pass. This is particularly convenient when a shared name — say, `ocean_heat_content` — appears in model output routines, post-processing scripts, and verification code, and you want to trace every reference across the full stack in a single search.
+
+One thing to be aware of: `repo-grep-subfolder` is ignored when using `repo-grep-multi`. The search always spans the entire parent directory. If you have a subfolder restriction active, clear it first before switching to a multi-repo search:
+
+```elisp
+(setq repo-grep-subfolder nil)
+```
+
 ### Case sensitivity
 
 By default searches are case-insensitive. In Python codebases this
