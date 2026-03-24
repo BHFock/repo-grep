@@ -73,7 +73,7 @@ A typical climate modelling workspace might look like this:
 
 Opening any file inside `cesm/` and pressing `C-F12` searches all three directories in one pass. This is particularly convenient when a shared name — say, `ocean_heat_content` — appears in model output routines, post-processing scripts, and verification code, and you want to trace every reference across the full stack in a single search.
 
-One thing to be aware of: `repo-grep-subfolder` is ignored when using `repo-grep-multi`. The search always spans the entire parent directory. If you have a subfolder restriction active, clear it first with `M-x repo-grep-clear-subfolder` before switching to a multi-repo search.
+Note that any active `repo-grep-subfolder` restriction is ignored by `repo-grep-multi` — the search always spans all sibling directories regardless.
 
 ### Case sensitivity
 
