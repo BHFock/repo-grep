@@ -51,9 +51,7 @@ only want to search within `src/` and ignore everything else:
 (setq repo-grep-subfolder "src")
 ```
 
-Set it interactively with `M-x repo-grep-set-subfolder`, which prompts
-you to pick a folder from your project root. To clear the restriction,
-set it back to `nil`.
+Set it interactively with `M-x repo-grep-set-subfolder`, which prompts you to pick a folder from your project root. To clear the restriction, use `M-x repo-grep-clear-subfolder`, or set it back to `nil` directly.
 
 If you're browsing in Dired, `M-x repo-grep-set-subfolder-from-dired`
 sets the subfolder to whichever directory is under the cursor.
