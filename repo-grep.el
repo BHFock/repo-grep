@@ -29,6 +29,8 @@
 ;; - Clickable results in a standard *grep* buffer
 ;; - Optional ripgrep (rg) backend for faster searches
 ;; - Optional .gitignore bypass when using the rg backend
+;; - Optional restriction to a subdirectory within the project
+;;   (`repo-grep-set-subfolder', `repo-grep-clear-subfolder')
 ;; - Optional multiple grep buffers to keep previous results intact
 ;; - Optional in-buffer filtering via `repo-grep-filter'
 ;;
@@ -67,6 +69,13 @@ Ignored when using `repo-grep-multi'."
          (selected-dir (read-directory-name "Select subfolder: " root nil t)))
     (setq repo-grep-subfolder (file-relative-name selected-dir root))
     (message "Search restricted to: %s" repo-grep-subfolder)))
+
+;;;###autoload
+(defun repo-grep-clear-subfolder ()
+  "Clear `repo-grep-subfolder', restoring search from the project root."
+  (interactive)
+  (setq repo-grep-subfolder nil)
+  (message "Subfolder restriction cleared"))
 
 ;;;###autoload
 (defun repo-grep-set-subfolder-from-dired ()
