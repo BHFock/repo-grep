@@ -84,4 +84,4 @@ For the full security policy, trust model, and instructions for reporting issues
 
 ## License
 
-BSD 3-Clause License — see [LICENSE](./LICENSE) for details.
+BSD 3-Clause License — see [LICENSE](./LICENSE) for details. For the story behind the tool, see [History](docs/history.md).
