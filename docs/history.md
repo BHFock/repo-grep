@@ -2,7 +2,7 @@
 
 ### The story of repo-grep
 
-Back at university, I worked on a numerical model that had grown over decades — [Fortran]( https://en.wikipedia.org/wiki/Fortran) files, parameter tables, utilities, and conventions accumulated over many hands. To understand it, I had to answer simple but essential questions: where a variable was set, how a flux reached the surface layer, which routine applied a boundary condition. That meant a lot of grep in the terminal. It worked, but switching between editor and shell constantly broke the flow.
+Back at university, I worked on a numerical model that had grown over decades — [Fortran]( https://en.wikipedia.org/wiki/Fortran) files, parameter tables, utilities, and conventions accumulated over many hands. To understand it, I had to answer simple but essential questions: where a variable was set, how a flux reached the surface layer, which routine applied a boundary condition. That meant a lot of [grep](https://www.gnu.org/software/grep/manual/grep.html#Invoking-grep) in the terminal. It worked, but switching between editor and shell constantly broke the flow.
 
 I was using [Emacs](https://www.gnu.org/software/emacs) , as many in my group did. One day I discovered that I could run [grep inside Emacs](https://www.gnu.org/software/emacs/manual/html_node/emacs/Grep-Searching.html). Results appeared in a dedicated buffer, and I could jump straight to the matching lines. It was a huge step up — but still repetitive. I had to type the search term and directory path every time. That got me wondering whether the editor could behave more like how I wanted to work.
 
