@@ -12,7 +12,7 @@ The first version was completely tied to the model I was working on. I hard-code
 
 So I generalised it. First with svn info, later with git rev-parse, I taught it to detect the project root automatically. I stripped out assumptions, made the logic repository-agnostic, and turned the hack into something portable. I used it like that for years — quietly, reliably, buried in my Emacs configuration.
 
-Eventually I pulled it out, named it repo-grep, and gave it its own repository. Around the same time, AI-assisted programming became available. Out of curiosity, I asked an AI tool to review the code. It liked the user experience — but it also flagged something I had never considered: the shell command construction wasn’t safe. There was a potential for [shell injection]( https://en.wikipedia.org/wiki/Code_injection#Shell_injection), the kind of thing you don’t worry about when you’re the only user of a private script. But now that the tool was public, I had a responsibility to fix it.
+Eventually I pulled it out, named it [repo-grep](https://github.com/BHFock/repo-grep), and gave it its own repository. Around the same time, AI-assisted programming became available. Out of curiosity, I asked an AI tool to review the code. It liked the user experience — but it also flagged something I had never considered: the shell command construction wasn’t safe. There was a potential for [shell injection]( https://en.wikipedia.org/wiki/Code_injection#Shell_injection), the kind of thing you don’t worry about when you’re the only user of a private script. But now that the tool was public, I had a responsibility to fix it.
 
 So I learned about input sanitisation, rewrote the command construction, added guardrails, and made the tool robust in a way it had never needed to be before. While I was at it, I documented it with a [tutorial]( https://github.com/BHFock/repo-grep/blob/main/docs/repo-grep-tutorial.md), cleaned up the functionality, and removed old assumptions. Over time, repo‑grep became something I felt comfortable publishing on [MELPA](https://melpa.org/#/repo-grep), making it easier for others to install and use.
 
@@ -20,4 +20,4 @@ The tool kept evolving. I added [ripgrep]( https://github.com/BurntSushi/ripgrep
 
 But some things never changed. The core idea remains exactly what it was on that first weekend: press one key, grep for the symbol under the cursor, and stay in the flow. Since around 2010, some form of this tool has supported my work. Looking back, I’m glad I started that little hack at university. It grew with me, adapted to new environments, and quietly increased the amount of code I can work with. What began as a personal convenience became a small, reliable companion in scientific computing.
 
-Hopefully [repo-grep.el](https://github.com/BHFock/repo-grep) is useful for others too.
+Hopefully [repo-grep](https://github.com/BHFock/repo-grep) is useful for others too.
