@@ -23,7 +23,6 @@
 ;;
 ;; Features include:
 ;; - VCS-aware project root detection (Git or SVN)
-;; - Optional restriction to a subdirectory within the project
 ;; - Case sensitivity and binary file handling options
 ;; - Customisable include/exclude file patterns
 ;; - Clickable results in a standard *grep* buffer
