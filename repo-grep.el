@@ -77,8 +77,8 @@ VC backends are disabled for performance."
   (interactive)
   (setq repo-grep-root
         (read-directory-name "Set project root: "
-                             (or (vc-root-dir) default-directory)
-                             nil t))
+                             (repo-grep--get-root-base)
+                              nil t))
   (message "Project root set to: %s" repo-grep-root))
 
 ;;;###autoload
@@ -92,7 +92,7 @@ VC backends are disabled for performance."
 (defun repo-grep-set-subfolder ()
   "Interactively set `repo-grep-subfolder'."
   (interactive)
-  (let* ((root (or (vc-root-dir) default-directory))
+  (let* ((root (repo-grep--get-root-base))
          (selected-dir (read-directory-name "Select subfolder: " root nil t)))
     (setq repo-grep-subfolder (file-relative-name selected-dir root))
     (message "Search restricted to: %s" repo-grep-subfolder)))
@@ -110,7 +110,7 @@ VC backends are disabled for performance."
   (interactive)
   (unless (derived-mode-p 'dired-mode)
     (error "This command must be run from a Dired buffer"))
-  (let* ((root (or (vc-root-dir) default-directory))
+  (let* ((root (repo-grep--get-root-base))
          (dir (dired-get-file-for-visit)))
     (unless (file-directory-p dir)
       (error "Selected item is not a directory"))
@@ -399,23 +399,24 @@ Requires ripgrep (rg) to be installed and available on PATH."
                                    ".")))
                " " )))
 
-(defun repo-grep--find-folder ()
-  "Determine the folder to run grep in.
+(defun repo-grep--get-root-base ()
+  "Return the effective project root for path calculations.
 Detection priority:
   1. `repo-grep-root' (manual override)
   2. `vc-root-dir' (Git, SVN via Emacs VC)
   3. `.git' directory traversal via `locate-dominating-file'
-  4. `default-directory' as last resort"
-  (let* ((root (or repo-grep-root
-                   (vc-root-dir)
-                   (when-let ((git (locate-dominating-file
-                                    default-directory ".git")))
-                     git)
-                   (when-let ((svn (locate-dominating-file
-                                    default-directory ".svn")))
-                     svn)
-                   default-directory))
-         (folder root))
+  4. `.svn' directory traversal via `locate-dominating-file'
+  5. `default-directory' as last resort"
+  (or repo-grep-root
+      (vc-root-dir)
+      (locate-dominating-file default-directory ".git")
+      (locate-dominating-file default-directory ".svn")
+      default-directory))
+
+(defun repo-grep--find-folder ()
+  "Determine the folder to run grep in.
+Delegates root detection to `repo-grep--get-root-base'."
+  (let ((folder (repo-grep--get-root-base)))
     (when repo-grep-from-folder-above
       (setq folder (expand-file-name ".." folder)))
     (when (and repo-grep-subfolder (not repo-grep-from-folder-above))
