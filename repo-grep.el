@@ -23,6 +23,7 @@
 ;;
 ;; Features include:
 ;; - VCS-aware project root detection (Git or SVN)
+;; - Manual project root override via `repo-grep-set-root'
 ;; - Case sensitivity and binary file handling options
 ;; - Customisable include/exclude file patterns
 ;; - Clickable results in a standard *grep* buffer
