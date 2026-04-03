@@ -60,6 +60,34 @@ Ignored when using `repo-grep-multi'."
                  (string :tag "Subfolder name"))
   :group 'repo-grep)
 
+(defcustom repo-grep-root nil
+  "Manual override for the project root directory.
+When non-nil, this path takes precedence over all auto-detection.
+Set interactively with `repo-grep-set-root', clear with
+`repo-grep-clear-root'."
+  :type '(choice (const :tag "Auto-detect" nil)
+                 (directory :tag "Manual root"))
+  :group 'repo-grep)
+
+;;;###autoload
+(defun repo-grep-set-root ()
+  "Manually set the project root, overriding auto-detection.
+Useful when `vc-root-dir' fails in large repositories or when
+VC backends are disabled for performance."
+  (interactive)
+  (setq repo-grep-root
+        (read-directory-name "Set project root: "
+                             (or (vc-root-dir) default-directory)
+                             nil t))
+  (message "Project root set to: %s" repo-grep-root))
+
+;;;###autoload
+(defun repo-grep-clear-root ()
+  "Clear the manual root override and revert to auto-detection."
+  (interactive)
+  (setq repo-grep-root nil)
+  (message "Manual root cleared; reverting to auto-detection"))
+
 ;;;###autoload
 (defun repo-grep-set-subfolder ()
   "Interactively set `repo-grep-subfolder'."
@@ -372,18 +400,30 @@ Requires ripgrep (rg) to be installed and available on PATH."
                " " )))
 
 (defun repo-grep--find-folder ()
-  "Determine the appropriate folder to run grep in.
-Uses Emacs' built-in VCS detection and falls back to `default-directory'.
-If `repo-grep-subfolder' is set and valid, append it to the root."
-  (let ((folder (or (vc-root-dir)
-                    default-directory)))
+  "Determine the folder to run grep in.
+Detection priority:
+  1. `repo-grep-root' (manual override)
+  2. `vc-root-dir' (Git, SVN via Emacs VC)
+  3. `.git' directory traversal via `locate-dominating-file'
+  4. `default-directory' as last resort"
+  (let* ((root (or repo-grep-root
+                   (vc-root-dir)
+                   (when-let ((git (locate-dominating-file
+                                    default-directory ".git")))
+                     git)
+                   (when-let ((svn (locate-dominating-file
+                                    default-directory ".svn")))
+                     svn)
+                   default-directory))
+         (folder root))
     (when repo-grep-from-folder-above
       (setq folder (expand-file-name ".." folder)))
     (when (and repo-grep-subfolder (not repo-grep-from-folder-above))
       (let ((sub (expand-file-name repo-grep-subfolder folder)))
         (if (file-directory-p sub)
             (setq folder sub)
-          (error "Subfolder '%s' does not exist under project root" repo-grep-subfolder))))
+          (error "Subfolder '%s' does not exist under project root"
+                 repo-grep-subfolder))))
     (unless (and folder (file-directory-p folder))
       (error "Could not determine a valid project root folder"))
     folder))
