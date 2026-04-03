@@ -56,6 +56,7 @@ For a detailed guide to all features, see the [repo-grep tutorial](docs/repo-gre
 | Respect .gitignore (rg only) | `repo-grep-rg-use-gitignore` | off | `M-x repo-grep-set-rg-use-gitignore` |
 | Multiple grep buffers | `repo-grep-new-buffer` | off | `M-x repo-grep-set-new-buffer` |
 | Restrict to subfolder | `repo-grep-subfolder` | nil | `M-x repo-grep-set-subfolder` |
+| Manual project root | `repo-grep-root` | nil | `M-x repo-grep-set-root` |
 
 All settings can also be set directly in your configuration, e.g. `(setq repo-grep-case-sensitive t)`.
 
