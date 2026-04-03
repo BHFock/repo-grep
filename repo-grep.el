@@ -458,6 +458,8 @@ buffer navigate directly to source files."
       (let ((inhibit-read-only t))
         (keep-lines regexp (point-min) (point-max))))))
 
+(defvar grep-mode-map)
+
 (defun repo-grep-setup-keybindings ()
   "Set up optional repo-grep keybindings in grep-mode-map."
   (with-eval-after-load 'grep
