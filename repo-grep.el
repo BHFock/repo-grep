@@ -107,7 +107,7 @@ VC backends are disabled for performance."
 
 ;;;###autoload
 (defun repo-grep-set-subfolder-from-dired ()
-  "Set `repo-grep-subfolder` based on the current directory in a Dired buffer."
+  "Set `repo-grep-subfolder' based on the current directory in a Dired buffer."
   (interactive)
   (unless (derived-mode-p 'dired-mode)
     (error "This command must be run from a Dired buffer"))
