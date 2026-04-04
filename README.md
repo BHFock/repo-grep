@@ -4,11 +4,12 @@
 [![Story](https://img.shields.io/badge/Story-Origin-lightgrey)](docs/history.md)
 [![MELPA](https://melpa.org/packages/repo-grep-badge.svg)](https://melpa.org/#/repo-grep)
 [![MELPA Stable](https://stable.melpa.org/packages/repo-grep-badge.svg)](https://stable.melpa.org/#/repo-grep)
-[![GitHub stars](https://img.shields.io/github/stars/BHFock/repo-grep?style=social)](https://github.com/BHFock/repo-grep/stargazers) 
+[![GitHub stars](https://img.shields.io/github/stars/BHFock/repo-grep?style=social)](https://github.com/BHFock/repo-grep/stargazers)
 
-## Recursive project-wide code search in Emacs
+## Search the symbol at point across repositories in Emacs
 
-When working across large projects or multiple repositories, using the symbol at point as the starting point for recursive search reduces the need for manual query construction.
+Use the symbol at point as the default term for recursive search in the current repository or across sibling repositories, with results shown in Emacs’ standard `*grep*` buffer.
+
 
 **repo-grep** runs a recursive grep through the folder structure of your Git repository, SVN working copy, or plain folder. It uses the symbol under the cursor as the default search term, which you can edit interactively. The search term can include a regular expression, and you can configure regex patterns as a prefix or suffix to further refine the search.
 
