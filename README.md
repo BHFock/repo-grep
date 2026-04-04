@@ -86,4 +86,6 @@ For the full security policy, trust model, and instructions for reporting issues
 
 ## License
 
-BSD 3-Clause License — see [LICENSE](./LICENSE) for details. For the story behind the tool, see [History](docs/history.md).
+BSD 3-Clause License — see [LICENSE](./LICENSE) for details.
+
+For some background on how the tool evolved, read [From a hack to a developer tool](docs/history.md).
