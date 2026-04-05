@@ -84,7 +84,7 @@ When you open a file inside a Git submodule, `vc-root-dir` returns the submodule
 ├── src/
 ├── docs/
 └── vendor/
-└── netcdf-fortran/   ← Git submodule, has its own .git
+   └── netcdf-fortran/   ← Git submodule, has its own .git
 ```
 
 Opening a file inside `vendor/netcdf-fortran/` and pressing `F12` searches only the submodule. Use `M-x repo-grep-set-root` to point repo-grep at the parent repository instead:
