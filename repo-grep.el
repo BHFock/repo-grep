@@ -1,7 +1,7 @@
 ;;; repo-grep.el --- Project-wide grep search -*- lexical-binding: t; -*-
 
 ;; Author:  Bjoern Hendrik Fock
-;; Version: 1.10.0
+;; Version: 1.11.0
 ;; License: BSD-3-Clause
 ;; Keywords: tools search grep convenience project
 ;; Package-Requires: ((emacs "27.1"))
@@ -23,6 +23,7 @@
 ;;
 ;; Features include:
 ;; - VCS-aware project root detection (Git or SVN)
+;; - Manual project root override via `repo-grep-set-root'
 ;; - Case sensitivity and binary file handling options
 ;; - Customisable include/exclude file patterns
 ;; - Clickable results in a standard *grep* buffer
@@ -60,11 +61,39 @@ Ignored when using `repo-grep-multi'."
                  (string :tag "Subfolder name"))
   :group 'repo-grep)
 
+(defcustom repo-grep-root nil
+  "Manual override for the project root directory.
+When non-nil, this path takes precedence over all auto-detection.
+Set interactively with `repo-grep-set-root', clear with
+`repo-grep-clear-root'."
+  :type '(choice (const :tag "Auto-detect" nil)
+                 (directory :tag "Manual root"))
+  :group 'repo-grep)
+
+;;;###autoload
+(defun repo-grep-set-root ()
+  "Manually set the project root, overriding auto-detection.
+Useful when `vc-root-dir' fails in large repositories or when
+VC backends are disabled for performance."
+  (interactive)
+  (setq repo-grep-root
+        (read-directory-name "Set project root: "
+                             (repo-grep--get-root-base)
+                              nil t))
+  (message "Project root set to: %s" repo-grep-root))
+
+;;;###autoload
+(defun repo-grep-clear-root ()
+  "Clear the manual root override and revert to auto-detection."
+  (interactive)
+  (setq repo-grep-root nil)
+  (message "Manual root cleared; reverting to auto-detection"))
+
 ;;;###autoload
 (defun repo-grep-set-subfolder ()
   "Interactively set `repo-grep-subfolder'."
   (interactive)
-  (let* ((root (or (vc-root-dir) default-directory))
+  (let* ((root (repo-grep--get-root-base))
          (selected-dir (read-directory-name "Select subfolder: " root nil t)))
     (setq repo-grep-subfolder (file-relative-name selected-dir root))
     (message "Search restricted to: %s" repo-grep-subfolder)))
@@ -78,11 +107,11 @@ Ignored when using `repo-grep-multi'."
 
 ;;;###autoload
 (defun repo-grep-set-subfolder-from-dired ()
-  "Set `repo-grep-subfolder` based on the current directory in a Dired buffer."
+  "Set `repo-grep-subfolder' based on the current directory in a Dired buffer."
   (interactive)
   (unless (derived-mode-p 'dired-mode)
     (error "This command must be run from a Dired buffer"))
-  (let* ((root (or (vc-root-dir) default-directory))
+  (let* ((root (repo-grep--get-root-base))
          (dir (dired-get-file-for-visit)))
     (unless (file-directory-p dir)
       (error "Selected item is not a directory"))
@@ -371,19 +400,32 @@ Requires ripgrep (rg) to be installed and available on PATH."
                                    ".")))
                " " )))
 
+(defun repo-grep--get-root-base ()
+  "Return the effective project root for path calculations.
+Detection priority:
+  1. `repo-grep-root' (manual override)
+  2. `vc-root-dir' (Git, SVN via Emacs VC)
+  3. `.git' directory traversal via `locate-dominating-file'
+  4. `.svn' directory traversal via `locate-dominating-file'
+  5. `default-directory' as last resort"
+  (or repo-grep-root
+      (vc-root-dir)
+      (locate-dominating-file default-directory ".git")
+      (locate-dominating-file default-directory ".svn")
+      default-directory))
+
 (defun repo-grep--find-folder ()
-  "Determine the appropriate folder to run grep in.
-Uses Emacs' built-in VCS detection and falls back to `default-directory'.
-If `repo-grep-subfolder' is set and valid, append it to the root."
-  (let ((folder (or (vc-root-dir)
-                    default-directory)))
+  "Determine the folder to run grep in.
+Delegates root detection to `repo-grep--get-root-base'."
+  (let ((folder (repo-grep--get-root-base)))
     (when repo-grep-from-folder-above
       (setq folder (expand-file-name ".." folder)))
     (when (and repo-grep-subfolder (not repo-grep-from-folder-above))
       (let ((sub (expand-file-name repo-grep-subfolder folder)))
         (if (file-directory-p sub)
             (setq folder sub)
-          (error "Subfolder '%s' does not exist under project root" repo-grep-subfolder))))
+          (error "Subfolder '%s' does not exist under project root"
+                 repo-grep-subfolder))))
     (unless (and folder (file-directory-p folder))
       (error "Could not determine a valid project root folder"))
     folder))
@@ -417,6 +459,8 @@ buffer navigate directly to source files."
     (with-current-buffer clone
       (let ((inhibit-read-only t))
         (keep-lines regexp (point-min) (point-max))))))
+
+(defvar grep-mode-map)
 
 (defun repo-grep-setup-keybindings ()
   "Set up optional repo-grep keybindings in grep-mode-map."

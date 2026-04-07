@@ -73,6 +73,28 @@ Opening any file inside `cesm/` and pressing `C-F12` searches all three director
 
 Note that any active `repo-grep-subfolder` restriction is ignored by `repo-grep-multi` — the search always spans all sibling directories regardless.
 
+
+### Searching across a project with Git submodules
+
+When you open a file inside a Git submodule, `vc-root-dir` returns the submodule root rather than the parent repository root. Suppose your repository looks like this:
+
+```
+~/climate-model/
+├── .git/
+├── src/
+├── docs/
+└── vendor/
+   └── netcdf-fortran/   ← Git submodule, has its own .git
+```
+
+Opening a file inside `vendor/netcdf-fortran/` and pressing `F12` searches only the submodule. Use `M-x repo-grep-set-root` to point repo-grep at the parent repository instead:
+
+```elisp
+M-x repo-grep-set-root  →  select ~/climate-model/
+```
+
+All subsequent searches use that root until you clear it with `M-x repo-grep-clear-root` or restart Emacs.
+
 ### Case sensitivity
 
 By default searches are case-insensitive. In Python codebases this
