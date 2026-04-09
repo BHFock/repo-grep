@@ -8,8 +8,7 @@
 
 ## Search the symbol at point across repositories in Emacs
 
-Use the symbol at point as the default term for recursive search in the current repository or across sibling repositories, with results shown in Emacs’ standard `*grep*` buffer.
-
+Use the symbol at point to run a recursive search in the current repository or across sibling repositories, with results shown in Emacs’ standard `*grep*` buffer.
 
 **repo-grep** runs a recursive grep through the folder structure of your Git repository, SVN working copy, or plain folder. It uses the symbol under the cursor as the default search term, which you can edit interactively. The search term can include a regular expression, and you can configure regex patterns as a prefix or suffix to further refine the search.
 
