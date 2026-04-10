@@ -49,7 +49,7 @@ For a detailed guide to all features, see the [repo-grep tutorial](docs/repo-gre
 
 ## Advanced Usage & Customisation
 
-| Setting | Variable | Default | Toggle |
+| Setting | Variable | Default | Interactive Command |
 |---|---|---|---|
 | Case sensitivity | `repo-grep-case-sensitive` | off | `M-x repo-grep-set-case-sensitivity` |
 | Ignore binary files | `repo-grep-ignore-binary` | on | `M-x repo-grep-set-ignore-binary` |
